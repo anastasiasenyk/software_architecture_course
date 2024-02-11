@@ -1,0 +1,30 @@
+GET http://localhost:5000/get_messages
+Accept: application/json
+
+###
+
+POST http://localhost:5000/send_message
+Content-Type: application/json
+
+{
+  "msg": "msg1"
+}
+
+
+###
+
+POST http://localhost:5000/send_message
+Content-Type: application/json
+
+{
+  "msg": "msg2"
+}
+
+###
+
+POST http://localhost:5000/send_message
+Content-Type: application/json
+
+{
+  "msg": "msg3"
+}
