@@ -16,5 +16,5 @@ POST http://localhost:5000/post_message
 Content-Type: application/json
 
 {
-  "msg": ["msg2"]
+  "msg": ["msg3"]
 }

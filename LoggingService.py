@@ -39,5 +39,5 @@ class LoggingService:
 
 if __name__ == '__main__':
     logging_service = LoggingService()
-    port = int(sys.argv[1]) if len(sys.argv) > 1 else 5004
+    port = int(sys.argv[1]) if len(sys.argv) > 1 else 5002
     logging_service.run(port)
