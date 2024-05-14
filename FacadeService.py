@@ -2,18 +2,19 @@ from flask import Flask, jsonify, request
 import requests
 import random
 import uuid
-import threading
 from hazelcast import HazelcastClient
+from consul_main import get_value_by_key, get_service, set_service
 
 
 class FacadeService:
-    def __init__(self, logging_service_urls, messages_service_url):
+    def __init__(self, id, port):
         self.app = Flask(__name__)
-        self.logging_service_urls = logging_service_urls
-        self.messages_service_url = messages_service_url
-        self.client = HazelcastClient(cluster_name="dev")
-        self.queue = self.client.get_queue("message-queue").blocking()
+        self.logging_service_urls = get_service("logging_service")
+        self.messages_service_url = get_service("message_service")
+        self.client = HazelcastClient(cluster_name=get_value_by_key("hazelcast_name"))
+        self.queue = self.client.get_queue(get_value_by_key("hazelcast_queue")).blocking()
         self.setup_routes()
+        set_service("facade_service", id, port)
 
     def setup_routes(self):
         self.app.route('/post_message', methods=['POST'])(self.post_message)
@@ -61,15 +62,4 @@ class FacadeService:
 
 
 if __name__ == "__main__":
-    logging_service_urls = [
-        "http://localhost:5002",
-        "http://localhost:5003",
-        "http://localhost:5004"
-    ]
-    messages_service_url = [
-        "http://localhost:5001",
-        "http://localhost:5005"
-        ]
-
-    facade_service = FacadeService(logging_service_urls, messages_service_url)
-    facade_service.run(5000)
+    facade_service = FacadeService("facade_service_1", 5000)

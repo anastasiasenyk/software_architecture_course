@@ -1,8 +1,8 @@
-GET http://localhost:5000/get_messages
+GET http://172.17.0.2:5000/get_messages
 Accept: application/json
 
 ###
-POST http://localhost:5000/post_message
+POST http://172.17.0.2:5000/post_message
 Content-Type: application/json
 
 {
@@ -12,7 +12,7 @@ Content-Type: application/json
 
 ###
 
-POST http://localhost:5000/post_message
+POST http://172.17.0.2:5000/post_message
 Content-Type: application/json
 
 {

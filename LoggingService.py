@@ -1,14 +1,16 @@
 from flask import Flask, jsonify, request
 from hazelcast import HazelcastClient
 import sys
+from consul_main import get_value_by_key, set_service
 
 
 class LoggingService:
-    def __init__(self):
+    def __init__(self, id, port):
         self.app = Flask(__name__)
-        self.client = HazelcastClient(cluster_name="dev")
-        self.map = self.client.get_map("distributed-map").blocking()
+        self.client = HazelcastClient(cluster_name=get_value_by_key("hazelcast_name"))
+        self.map = self.client.get_map(get_value_by_key("hazelcast_map")).blocking()
         self.setup_routes()
+        set_service("logging_service", id, port)
 
     def setup_routes(self):
         self.app.route('/log_message', methods=['POST'])(self.log_message)
@@ -38,6 +40,6 @@ class LoggingService:
 
 
 if __name__ == '__main__':
-    logging_service = LoggingService()
-    port = int(sys.argv[1]) if len(sys.argv) > 1 else 5002
-    logging_service.run(port)
+    logging_service_1 = LoggingService("logging_service_1", 5001)
+    logging_service_2 = LoggingService("logging_service_2", 5002)
+    logging_service_3 = LoggingService("logging_service_3", 5003)

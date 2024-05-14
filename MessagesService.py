@@ -4,16 +4,18 @@ import threading
 import uuid
 import requests
 import sys
+from consul_main import get_value_by_key, set_service
 
 
 class MessageService:
-    def __init__(self):
+    def __init__(self, id, port):
         self.app = Flask(__name__)
-        self.client = HazelcastClient(cluster_name="dev")
-        self.queue = self.client.get_queue("message-queue").blocking()
+        self.client = HazelcastClient(cluster_name=get_value_by_key("hazelcast_name"))
+        self.queue = self.client.get_queue(get_value_by_key("hazelcast_queue")).blocking()
         self.messages = []
         self.mutex = threading.Lock()
         self.setup_routes()
+        set_service("message_service", id, port)
 
     def setup_routes(self):
         self.app.route('/get_all_messages', methods=['GET'])(self.get_messages)
@@ -41,7 +43,6 @@ class MessageService:
         self.app.run(port=port)
 
 
-if __name__ == "__main__":
-    service = MessageService()
-    port = int(sys.argv[1]) if len(sys.argv) > 1 else 5001
-    service.run(port)
+if __name__ == '__main__':
+    message_service_1 = MessageService("message_service_1", 5004)
+    message_service_2 = MessageService("message_service_2", 5005)
